@@ -1,6 +1,16 @@
 import * as amqp from 'amqplib';
 import { Channel, Connection, Message } from 'amqplib';
-import { MongoClient } from 'mongodb';
+import { Collection, MongoClient } from 'mongodb';
+
+interface Street {
+	streetId: number;
+	name: string;
+}
+
+interface ParsedMessage {
+	streets: Street[];
+	city: string;
+}
 
 export class ConsumerService {
 	private connection: Connection | null = null;
@@ -74,31 +84,23 @@ export class ConsumerService {
 		// Set up a consumer for the queue
 		this.channel.consume(this.queueName, async (msg: Message | null) => {
 			if (msg) {
-				try {
-					const streetsDataByCity = msg.content.toString();
+				const streetsDataByCity = msg.content.toString();
 
-					// Insert the message into MongoDB
-					await this.saveMessageToMongo(streetsDataByCity);
+				// Insert the message into MongoDB
+				await this.saveMessageToMongo(streetsDataByCity);
 
-					// Acknowledge that the message has been processed
-					this.channel?.ack(msg);
-
-				} catch (error) {
-					console.error("Error processing message:", error);
-
-					// nack will reject the message with an option to requeue
-					this.channel.nack(msg, false, true);
-				}
-
+				// Acknowledge that the message has been processed
+				this.channel?.ack(msg);
 			}
 		});
 
 		console.log(`ConsumerService is now listening for messages on ${this.queueName}`);
 	}
 
-	async saveMessageToMongo(message) {
-		message = JSON.parse(message);
-		const { city, streets } = message
+	async saveMessageToMongo(message: string) {
+		const parsedMessage: ParsedMessage = JSON.parse(message);
+		const { city } = parsedMessage
+		const { streets }: { streets: Street[] } = parsedMessage
 
 		if (!city || !streets) {
 			console.error('Issues with parsing data from rabbitmq');
@@ -106,14 +108,24 @@ export class ConsumerService {
 		}
 
 		const db = this.mongoClient.db(this.dbName);
-		const collection = db.collection(message.city);
-		const result = await collection.updateOne(
-			{ city },
-			{ $addToSet: { streets: { $each: streets } } },
-			{ upsert: true }
-		);
+		const collection: Collection<Document> = db.collection(city);
+		try {
+			await this.updateStreets(collection, streets)
+			console.log('Streets saved for city:', city);
+		} catch (error) {
+			console.log('Failed Streets saved for city:', city);
+		}
 
-		console.log('Streets saved for city:', city);
+	}
+
+	async updateStreets(collection: Collection<Document>, streets: Street[]) {
+		for (const street of streets) {
+			await collection.updateOne(
+				{ id: street.streetId },
+				{ $set: { name: street.name } },
+				{ upsert: true }
+			);
+		}
 	}
 
 	async close() {
