@@ -1,24 +1,24 @@
 {
-  "name": "data-managment-interview",
+  "name": "data-managment",
   "version": "1.0.0",
-  "description": "- Public repository with the data management team's technichal interview assignment inside    ---",
+  "description": "- Public repository with the data management ",
   "main": "dist/main.js",
   "scripts": {
+    "compile": "npm i && tsc",
     "publish": "node dist/main.js publish",
-    "compile": "tsc",
     "consume": "nodemon --watch node dist/main.js consume",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dataloop-ai/data-managment-interview.git"
+    "url": "git+https://github.com/anjey1/data_management.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dataloop-ai/data-managment-interview/issues"
+    "url": "https://github.com/anjey1/data_management.git/issues"
   },
-  "homepage": "https://github.com/dataloop-ai/data-managment-interview#readme",
+  "homepage": "https://github.com/anjey1/data_management.git#readme",
   "dependencies": {
     "amqplib": "^0.10.3",
     "axios": "^1.3.2",

@@ -1,7 +1,7 @@
 # **data-managment-solution**
 
 ## Running Project:
-   1) `npm i`
+   1) `npm run compile`
 
    2) `docker compose up -d`
    
