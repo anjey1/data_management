@@ -7,17 +7,16 @@
     ],
     "module": "commonjs",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "allowJs": true,
+    "esModuleInterop": true,
     "noImplicitReturns": true,
     "noUnusedLocals": false,
     "rootDir": "src",
-    "outDir": "dist",
-    "watch": false,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "outDir": "dist"
   },
   "compileOnSave": false,
   "include": [

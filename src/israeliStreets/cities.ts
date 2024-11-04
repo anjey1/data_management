@@ -1289,7 +1289,7 @@ export const cities = {
 	
 export type city = keyof typeof cities
 
-export const enlishNameByCity: Record<string, city>  = {
+export const englishNameByCity: Record<string, city>  = {
 	[`איתמר               `]: `Itamar`,
 	[ `אשדוד               `]: `Ashdod`,
 	[ `גאולי תימן          `]: `Gawli Yemen`,
