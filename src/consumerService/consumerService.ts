@@ -3,8 +3,8 @@ import { Channel, Connection, Message } from 'amqplib';
 import { Collection, MongoClient } from 'mongodb';
 
 interface Street {
-	streetId: number;
-	name: string;
+	_id: number;
+	street_name: string;
 }
 
 interface ParsedMessage {
@@ -110,7 +110,7 @@ export class ConsumerService {
 		const db = this.mongoClient.db(this.dbName);
 		const collection: Collection<Document> = db.collection(city);
 		try {
-			await this.updateStreets(collection, streets)
+			await this.updateStreets(collection, streets, city)
 			console.log('Streets saved for city:', city);
 		} catch (error) {
 			console.log('Failed Streets saved for city:', city);
@@ -118,11 +118,16 @@ export class ConsumerService {
 
 	}
 
-	async updateStreets(collection: Collection<Document>, streets: Street[]) {
+	async updateStreets(collection: Collection<Document>, streets: Street[], city: string) {
+
 		for (const street of streets) {
+			const { _id, ...otherStreetFields } = street; // Destructure to separate fields
 			await collection.updateOne(
-				{ id: street.streetId },
-				{ $set: { name: street.name } },
+				{ id: _id },
+				{
+					$set: { ...otherStreetFields, name: street.street_name, accessed: new Date(), city: city, },
+					$setOnInsert: { created: new Date() }
+				},
 				{ upsert: true }
 			);
 		}

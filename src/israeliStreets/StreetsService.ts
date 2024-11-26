@@ -27,7 +27,7 @@ export class StreetsService {
 		}
 		return this._axios
 	}
-	static async getStreetsInCity(city: city): Promise<{ city: city, streets: Pick<Street, 'streetId' | 'street_name'>[] }> {
+	static async getStreetsInCity(city: city): Promise<{ city: city, streets: [] }> {
 
 		if (!cities[city]) {
 			throw new Error('No city found for : ' + city)
@@ -40,8 +40,10 @@ export class StreetsService {
 			throw new Error('No streets found for city: ' + city)
 		}
 
-		const streets: Pick<Street, 'streetId' | 'street_name'>[] = results.map((street: ApiStreet) => {
-			return { streetId: street._id, name: street.street_name.trim() }
+		const streets: [] = results.map((street: ApiStreet) => {
+			return {
+				...street
+			}
 		})
 
 		return { city, streets }
